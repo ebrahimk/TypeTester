@@ -1,0 +1,85 @@
+#define services for the typetester web app
+version: '3.7'
+services: 
+  portal: 
+    build:
+      context: ./Portal
+      dockerfile: dockerfile    
+    ports:
+      - 8080:1337
+    networks: 
+      - typetester
+    container_name: portal-service
+    environment:
+      - READ_IP=read-service
+      - UPDATE_IP=update-service
+      - CREATE_IP=create-service
+      - DELETE_IP=delete-service
+      - DB_HOST=typetesterdb.mysql.database.azure.com
+      - DB_PASSWORD=HelloGoodbye13!
+      - DB_ADMIN=UserAdmin14@typetesterdb
+      - JWT_KEY=PrivateAuthenticationKey12
+
+  #Port 1339
+  read:
+    build:
+      context: ./Read
+      dockerfile: dockerfile    
+    networks:
+      - typetester
+    container_name: read-service
+    hostname: read-service
+    environment:
+      - DB_HOST=typetesterdb.mysql.database.azure.com
+      - DB_PASSWORD=HelloGoodbye13!
+      - DB_ADMIN=UserAdmin14@typetesterdb
+      - JWT_KEY=PrivateAuthenticationKey12
+
+  #Port 1341
+  create:
+    build:
+      context: ./Create
+      dockerfile: dockerfile
+    networks:
+      - typetester
+    container_name: create-service
+    environment:
+      - DB_HOST=typetesterdb.mysql.database.azure.com
+      - DB_PASSWORD=HelloGoodbye13!
+      - DB_ADMIN=UserAdmin14@typetesterdb
+      - JWT_KEY=PrivateAuthenticationKey12
+
+  #Port 1338
+  delete:
+    build:
+      context: ./Delete
+      dockerfile: dockerfile
+    networks:
+      - typetester
+    container_name: delete-service
+    environment:
+      - DB_HOST=typetesterdb.mysql.database.azure.com
+      - DB_PASSWORD=HelloGoodbye13!
+      - DB_ADMIN=UserAdmin14@typetesterdb
+      - JWT_KEY=PrivateAuthenticationKey12  
+
+  #Port 1340
+  update:
+    build:
+      context: ./Update
+      dockerfile: dockerfile
+    networks:
+      - typetester
+    container_name: update-service
+    environment:
+      - DB_HOST=typetesterdb.mysql.database.azure.com
+      - DB_PASSWORD=HelloGoodbye13!
+      - DB_ADMIN=UserAdmin14@typetesterdb
+      - JWT_KEY=PrivateAuthenticationKey12
+
+networks:
+  typetester:
+    name: typetester
+    driver: bridge
+    ipam:
+      driver: default

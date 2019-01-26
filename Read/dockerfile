@@ -1,0 +1,22 @@
+#Node.js version 10 base image
+FROM node:10
+
+#create application directory within image
+WORKDIR /usr/src/app
+
+#Install application dependencies
+COPY package*.json ./
+
+#Run "npm install" from within the container
+RUN npm install
+
+#Bundle application 
+COPY . . 
+
+#Expose the container on port 8080
+EXPOSE 1339
+
+#Initialize starting command
+CMD [ "npm", "start" ]
+
+#docker run -p <taget port>:1337 -d <container name>

@@ -1,0 +1,19 @@
+{{> header}}
+<main>
+    <div class="columnWrapper">
+        <table>
+            <tr>
+                <th>User</th>
+                <th>Test Date</th>
+                <th>Test Score</th>
+            </tr>
+            {{#each results}}
+                <tr>
+                    <td>{{username}}</td>
+                    <td>{{date_taken}}</td>
+                    <td>{{score}}</td>
+                </tr>
+            {{/each}}
+        </table>
+    </div>
+</main>

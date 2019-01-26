@@ -1,0 +1,30 @@
+#Node.js version 10 base image
+FROM node:10
+
+#create application directory within image
+WORKDIR /usr/src/app
+
+#Install application dependencies
+COPY package*.json ./
+ 
+#RUN apk update && apk upgrade \
+#	&& apk add --no-cache git \
+#	&& apk --no-cache add --virtual builds-deps build-base python \
+#	&& npm install -g nodemon cross-env eslint npm-run-all node-gyp node-pre-gyp && npm install\
+#	&& npm rebuild bcrypt --build-from-source
+
+#Run "npm install" from within the container
+RUN npm install
+
+#Bundle application 
+COPY . . 
+
+#Expose the container on port 8080
+EXPOSE 1337
+
+#Initialize starting command
+CMD [ "npm", "start" ]
+
+#docker run -p <taget port>:1337 -d <container name>
+#docker run -t -i --rm -v $(pwd):/app -w /app node:slim sh -c 'apt-get update && apt-get install -y build-essential && apt-get install -y python && npm install'
+#RUN apk add --no-cache --virtual .gyp python make g++ && npm install [ your npm dependencies here ] && apk del .gyp
