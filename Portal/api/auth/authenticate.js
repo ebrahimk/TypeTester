@@ -19,7 +19,6 @@ module.exports = (req,res,next) => {
                 console.log("Entered PW: " + req.body.password);
 
                 bcrypt.compare(req.body.password, rows[0].password, (err, result) => {
-                    console.log("HERE");
                     if(err) {
                         return res.status(401).json({
                             message: 'Auth failed'

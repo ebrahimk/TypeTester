@@ -1,6 +1,27 @@
 #define services for the typetester web app
+#This compose file is for local development and testing
+#The file will spin up each dockerized microservice as well as a mySQL database
+#The database will store persistent information in ./Database/data
+
 version: '3.7'
 services: 
+  mySQL_DB:
+    image: mysql:5.7
+    ports:
+      - 3306:3306
+    expose:
+      - 3306 
+    networks:
+      - typetester 
+    volumes:
+      - ./Database/data:/var/lib/mysql
+      - ./Database:/docker-entrypoint-initdb.d/:ro
+    container_name: mysql-database
+    environment:
+      - MYSQL_DATABASE=typetest_db
+      - MYSQL_ROOT_PASSWORD=password
+      - MYSQL_USER=root
+
   portal: 
     build:
       context: ./Portal
@@ -15,9 +36,9 @@ services:
       - UPDATE_IP=update-service
       - CREATE_IP=create-service
       - DELETE_IP=delete-service
-      - DB_HOST=typetesterdb.mysql.database.azure.com
-      - DB_PASSWORD=HelloGoodbye13!
-      - DB_ADMIN=UserAdmin14@typetesterdb
+      - DB_HOST=mysql-database
+      - DB_PASSWORD=password
+      - DB_ADMIN=root
       - JWT_KEY=PrivateAuthenticationKey12
 
   #Port 1339
@@ -30,9 +51,9 @@ services:
     container_name: read-service
     hostname: read-service
     environment:
-      - DB_HOST=typetesterdb.mysql.database.azure.com
-      - DB_PASSWORD=HelloGoodbye13!
-      - DB_ADMIN=UserAdmin14@typetesterdb
+      - DB_HOST=mysql-database
+      - DB_PASSWORD=password
+      - DB_ADMIN=root
       - JWT_KEY=PrivateAuthenticationKey12
 
   #Port 1341
@@ -44,9 +65,9 @@ services:
       - typetester
     container_name: create-service
     environment:
-      - DB_HOST=typetesterdb.mysql.database.azure.com
-      - DB_PASSWORD=HelloGoodbye13!
-      - DB_ADMIN=UserAdmin14@typetesterdb
+      - DB_HOST=mysql-database
+      - DB_PASSWORD=password
+      - DB_ADMIN=root
       - JWT_KEY=PrivateAuthenticationKey12
 
   #Port 1338
@@ -58,9 +79,9 @@ services:
       - typetester
     container_name: delete-service
     environment:
-      - DB_HOST=typetesterdb.mysql.database.azure.com
-      - DB_PASSWORD=HelloGoodbye13!
-      - DB_ADMIN=UserAdmin14@typetesterdb
+      - DB_HOST=mysql-database
+      - DB_PASSWORD=password
+      - DB_ADMIN=root
       - JWT_KEY=PrivateAuthenticationKey12  
 
   #Port 1340
@@ -72,9 +93,9 @@ services:
       - typetester
     container_name: update-service
     environment:
-      - DB_HOST=typetesterdb.mysql.database.azure.com
-      - DB_PASSWORD=HelloGoodbye13!
-      - DB_ADMIN=UserAdmin14@typetesterdb
+      - DB_HOST=mysql-database
+      - DB_PASSWORD=password
+      - DB_ADMIN=root
       - JWT_KEY=PrivateAuthenticationKey12
 
 networks:
