@@ -1,0 +1,300 @@
+# Formating Regex: ^\(\s\s\)\+ 
+#reference: https://gist.github.com/assertnotnull/8e1f8307321081c1068b93c6b49b2b94
+apiVersion: v1
+kind: Service				#How pods labelled "app: portal-services" are exposed to the cluster
+metadata:
+  name: portalservices 
+spec:
+  type: LoadBalancer
+  ports:  
+  - port: 8080				#port exposed externally, public port
+    targetPort: 1337  			#port exposed internally to pods running portal, same as the port the contianerized portal applicaiton is listening on
+    protocol: TCP
+  selector:
+    app: portal				#take the containers with the name portal-services and run them on 
+---
+apiVersion: extensions/v1beta1
+kind: Deployment
+metadata:
+  name: portal
+spec:
+    replicas: 2
+    strategy:
+      type: RollingUpdate 		
+      rollingUpdate:  
+        maxUnavailable: 1		#maximum number of unavailable pods	 
+        maxSurge: 1  			#maximum number of pods to add due to congestion
+    template:
+     metadata:
+       labels:
+         app: portal			#How we target our pods with services
+     spec:
+       containers:
+       - name: portal-serivces
+         image: kubernetesmicroserviceapp_portal
+         imagePullPolicy: Never
+         ports:				#Port our containerized application is listening on 	
+         - containerPort: 1337
+         env:
+         - name: READ_IP
+           value: readservice
+         - name: UPDATE_IP 
+           value: updateservice 
+         - name: CREATE_IP 
+           value: createservice 
+         - name: DELETE_IP 
+           value: deleteservice 
+         - name: DB_HOST 
+           value: typetestdb 
+         - name: DB_PASSWORD
+           value: password 
+         - name: DB_ADMIN
+           value: root 
+         - name: JWT_KEY
+           value: PrivateAuthenticationKey12
+       imagePullSecrets:		 #Authentication for pulling from Azure Container Registry
+       - name: typetest-registry-key
+---
+apiVersion: v1
+kind: Service                            #How pods labelled "app: portal-services" are exposed to the cluster
+metadata:
+  name: readservice			#ACCORDING TO MY RESEARCH THE READ SERVICE SHOULD BE INTERNALLY ACCESSIBLE THROUGH THE NAME
+spec:
+  type: ClusterIP
+  ports:
+  - port: 1339                           #port exposed externally, public port
+    targetPort: 1339                     #port exposed internally to pods running portal, same as the port the contianerized portal applicaiton is listening on
+    protocol: TCP
+  selector:
+    app: read              	 	 #take the containers with the name portal-services and run them on 
+---
+apiVersion: extensions/v1beta1
+kind: Deployment
+metadata:
+  name: readservice
+spec:
+    replicas: 1
+    strategy:
+      type: RollingUpdate
+      rollingUpdate:
+        maxUnavailable: 1               #maximum number of unavailable pods      
+        maxSurge: 1                     #maximum number of pods to add due to congestion
+    template:
+     metadata:
+       labels:
+         app: read                   #How we target our pods with services
+     spec:
+       containers:
+       - name: read-serivces
+         image: kubernetesmicroserviceapp_read
+         imagePullPolicy: Never
+         ports:                         #Port our containerized application is listening on     
+         - containerPort: 1339
+         env:
+         - name: DB_HOST
+           value: typetestdb
+         - name: DB_PASSWORD
+           value: password
+         - name: DB_ADMIN
+           value: root
+         - name: JWT_KEY
+           value: PrivateAuthenticationKey12
+       imagePullSecrets:                #Authentication for pulling from Azure Container Registry
+       - name: typetest-registry-key
+---
+apiVersion: v1
+kind: Service                            #How pods labelled "app: portal-services" are exposed to the cluster
+metadata:
+  name: createservice                    #ACCORDING TO MY RESEARCH THE READ SERVICE SHOULD BE INTERNALLY ACCESSIBLE THROUGH THE NAME
+spec:
+  type: ClusterIP
+  ports:
+  - port: 1341                           #port exposed externally, public port
+    targetPort: 1341                     #port exposed internally to pods running portal, same as the port the contianerized portal applicaiton is listening on
+    protocol: TCP
+  selector:
+    app: create                            #take the containers with the name portal-services and run them on 
+---
+apiVersion: extensions/v1beta1
+kind: Deployment
+metadata:
+  name: createservice
+spec:
+    replicas: 1
+    strategy:
+      type: RollingUpdate
+      rollingUpdate:
+        maxUnavailable: 1               #maximum number of unavailable pods      
+        maxSurge: 1                     #maximum number of pods to add due to congestion
+    template:
+     metadata:
+       labels:
+         app: create                   #How we target our pods with services
+     spec:
+       containers:
+       - name: create-serivces
+         image: kubernetesmicroserviceapp_create
+         imagePullPolicy: Never
+         ports:                         #Port our containerized application is listening on     
+         - containerPort: 1341
+         env:
+         - name: DB_HOST
+           value: typetestdb
+         - name: DB_PASSWORD
+           value: password
+         - name: DB_ADMIN
+           value: root
+         - name: JWT_KEY
+           value: PrivateAuthenticationKey12
+       imagePullSecrets:                #Authentication for pulling from Azure Container Registry
+       - name: typetest-registry-key
+---
+apiVersion: v1
+kind: Service                            #How pods labelled "app: portal-services" are exposed to the cluster
+metadata:
+  name: deleteservice                    #ACCORDING TO MY RESEARCH THE READ SERVICE SHOULD BE INTERNALLY ACCESSIBLE THROUGH THE NAME
+spec:
+  type: ClusterIP
+  ports:
+  - port: 1338                           #port exposed externally, public port
+    targetPort: 1338                     #port exposed internally to pods running portal, same as the port the contianerized portal applicaiton is listening on
+    protocol: TCP
+  selector:
+    app: delete                            #take the containers with the name portal-services and run them on 
+---
+apiVersion: extensions/v1beta1
+kind: Deployment
+metadata:
+  name: deleteservice
+spec:
+    replicas: 1
+    strategy:
+      type: RollingUpdate
+      rollingUpdate:
+        maxUnavailable: 1               #maximum number of unavailable pods      
+        maxSurge: 1                     #maximum number of pods to add due to congestion
+    template:
+     metadata:
+       labels:
+         app: delete                   #How we target our pods with services
+     spec:
+       containers:
+       - name: delete-serivces
+         image: kubernetesmicroserviceapp_delete
+         imagePullPolicy: Never
+         ports:                         #Port our containerized application is listening on     
+         - containerPort: 1338
+         env:
+         - name: DB_HOST
+           value: typetestdb
+         - name: DB_PASSWORD
+           value: password
+         - name: DB_ADMIN
+           value: root
+         - name: JWT_KEY
+           value: PrivateAuthenticationKey12
+       imagePullSecrets:                #Authentication for pulling from Azure Container Registry
+       - name: typetest-registry-key
+---
+apiVersion: v1
+kind: Service                            #How pods labelled "app: portal-services" are exposed to the cluster
+metadata:
+  name: updateservice                    #ACCORDING TO MY RESEARCH THE READ SERVICE SHOULD BE INTERNALLY ACCESSIBLE THROUGH THE NAME
+spec:
+  type: ClusterIP
+  ports:
+  - port: 1340                           #port exposed externally, public port
+    targetPort: 1340                     #port exposed internally to pods running portal, same as the port the contianerized portal applicaiton is listening on
+    protocol: TCP
+  selector:
+    app: update                            #take the containers with the name portal-services and run them on 
+---
+apiVersion: extensions/v1beta1
+kind: Deployment
+metadata:
+  name: updateservice
+spec:
+    replicas: 1
+    strategy:
+      type: RollingUpdate
+      rollingUpdate:
+        maxUnavailable: 1               #maximum number of unavailable pods      
+        maxSurge: 1                     #maximum number of pods to add due to congestion
+    template:
+     metadata:
+       labels:
+         app: update                   #How we target our pods with services
+     spec:
+       containers:
+       - name: update-serivces
+         image: kubernetesmicroserviceapp_update
+         imagePullPolicy: Never
+         ports:                         #Port our containerized application is listening on     
+         - containerPort: 1340
+         env:
+         - name: DB_HOST
+           value: typetestdb            
+         - name: DB_PASSWORD
+           value: password
+         - name: DB_ADMIN
+           value: root
+         - name: JWT_KEY
+           value: PrivateAuthenticationKey12
+       imagePullSecrets:                #Authentication for pulling from Azure Container Registry
+       - name: typetest-registry-key
+
+---    
+apiVersion: v1
+kind: Service
+metadata:
+  name: typetestdb
+spec:
+  ports:
+  - port: 3306
+  selector:
+    app: mysql
+  type: NodePort
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: typetestdb
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: mysql
+  strategy:
+    type: Recreate
+  template:
+    metadata:
+      labels:
+        app: mysql
+    spec:
+      containers:
+      - image: mysql:5.7
+        name: mysql
+        env:
+        - name: MYSQL_ROOT_PASSWORD
+          value: password
+        - name: MYSQL_DATABASE
+          value: typetest_db
+        - name: MYSQL_USER
+          value: root
+        ports:
+        - containerPort: 3306
+          name: mysql
+        volumeMounts:
+        - name: mysql-persistent-storage
+          mountPath: /var/lib/mysql/
+        - name: mysql-host-path
+          mountPath: /docker-entrypoint-initdb.d/
+      volumes:
+      - name: mysql-persistent-storage
+        hostPath:
+          path: /Users/kamronebrahimi/Code/KubernetesMicroserviceApp/Database/data        #needs to be exact path :(
+          type: Directory
+      - name: mysql-host-path
+        hostPath:
+          path: /Users/kamronebrahimi/Code/KubernetesMicroserviceApp/Database
+          type: Directory

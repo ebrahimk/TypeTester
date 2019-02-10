@@ -2,6 +2,7 @@ const connection = require('../../db');
 const request = require('request');
 
 module.exports = (req, res, next) => {
+    var context = {};
 
     if(req.body['passWord']) {
         if (req.body.passWord !== req.body.userRePassword || req.body.passWord === "") {    //send error if passwords do not match

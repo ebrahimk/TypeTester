@@ -6,7 +6,7 @@ exports.get_leaderboard = function (req, res) {
 
     const options = {
         //url: 'http://' + process.env.READ_IP + ':1339/leaderboard',
-        url: 'http://read-service:1339/leaderboard',
+        url: 'http://' + process.env.READ_IP + ':1339/leaderboard',
         method: 'GET',
         headers: {
             'Accept': 'application/json',
