@@ -13,12 +13,13 @@ This project requires that your local machine have docker installed, clone the r
 docker-compose up
 ```
 
-This will build each microservice and a mySQL database in a docker image, configure all networking requirements and host the applicaiton on localhost:8080 
+This will build each microservice and a mySQL database in a docker image, configure all networking requirements and host the application on localhost:8080 
 
 ## Installation (Kubernetes)
 
 Deploying this application to a local Kubernetes cluster requires that you have a local cluster set up (I used Docker Desktop for Mac).
 
 ```bash
-kubectl create -f kube-deployment.yaml
+chmod +777 kube_local.sh
+./kube_local.sh
 ```
