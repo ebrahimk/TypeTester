@@ -292,9 +292,9 @@ spec:
       volumes:
       - name: mysql-persistent-storage
         hostPath:
-          path: /Users/kamronebrahimi/Code/KubernetesMicroserviceApp/Database/data        #needs to be exact path :(
+          path: RELATIVE_PATH/Database/data 
           type: Directory
       - name: mysql-host-path
         hostPath:
-          path: /Users/kamronebrahimi/Code/KubernetesMicroserviceApp/Database
+          path: RELATIVE_PATH/Database
           type: Directory

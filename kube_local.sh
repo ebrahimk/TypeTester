@@ -3,6 +3,9 @@
 echo "$(tput setaf 6)Building Docker images for each service...$(tput sgr 0)"
 docker-compose build
 
+dir=$(pwd)
+sed -i -e "s/RELATIVE_PATH/${dir//\//\\/}/g" ./kube-deployment.yml
+
 echo "$(tput setaf 6) Handing off containerized serivces to local Kubernetes Cluster, hosting on localhost:8080...$(tput sgr 0)"
 echo "$(tput setaf 6)Mounting ./Database/data...$(tput sgr 0)" 
 kubectl create -f kube-deployment.yml 
@@ -26,6 +29,8 @@ rm -rf ./Database/data/*
 
 echo "$(tput setaf 6)Deleting all local Docker images...$(tput sgr 0)"
 docker rmi kubernetesmicroserviceapp_update kubernetesmicroserviceapp_delete kubernetesmicroserviceapp_create kubernetesmicroserviceapp_read kubernetesmicroserviceapp_portal 
+
+sed -i -e "s/${dir//\//\\/}/RELATIVE_PATH/g" ./kube-deployment.yml
 
 echo "$(tput setaf 2)Process Complete!$(tput sgr 0)" 
 
